@@ -24,13 +24,17 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Android SDK
+      - name: Setup Android command-line tools
         uses: android-actions/setup-android@v3
         with:
-          packages: |
-            platform-tools
-            platforms;android-35
-            build-tools;35.0.0
+          packages: ""
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Extract Android project
         run: |
@@ -39,7 +43,7 @@ jobs:
 
       - name: Locate project and build APK
         run: |
-          GRADLEW=$(find project -name gradlew -type f | head -n 1)
+          GRADLEW=$(find project -name gradlew -type f | head -1)
 
           if [ -z "$GRADLEW" ]; then
             echo "ERROR: gradlew not found"
@@ -59,3 +63,4 @@ jobs:
           name: FocusLock-APK
           path: project/**/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          
